@@ -9,5 +9,5 @@ If you intrest to run this application, please follow this few steps,
 3. Run ```npm install``` to install node modules
 4. Run ```ng serve -o``` to open in web browser.
 
-#### To find the Backend part of this application, please go through this link,
+#### Please find the Frontend part of this application by going through this link,
 * https://github.com/MininduKothalawala/AngularAppBackend
