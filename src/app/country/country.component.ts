@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {ModalDismissReasons, NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {FormBuilder, FormGroup, NgForm} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, FormGroupDirective, NgForm, Validators} from '@angular/forms';
 // import {countryService} from './country.c'
 
 export class Country {
@@ -19,6 +19,8 @@ export class Country {
   templateUrl: './country.component.html',
   styleUrls: ['./country.component.css']
 })
+
+
 export class CountryComponent implements OnInit {
 
   countries: Country[] = [];
@@ -35,6 +37,8 @@ export class CountryComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    //call to the get all countries method and reload the form, it just like the refreshing the page
     this.getAllCountries();
 
     this.editForm = this.fb.group({
@@ -47,12 +51,17 @@ export class CountryComponent implements OnInit {
   getAllCountries() {
     this.httpClient.get<any>(`${this.baseApi}/rest/v2/countries`).subscribe(
       response => {
-        console.log(response);
+
+        //this console log used for the testing purposes
+        //console.log(response);
+
+        //load data to the country attributes that declared here
         this.countries = response;
       }
     );
   }
 
+  //call when user wants to add new country to the list
   open(content: any) {
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {
       this.closeResult = `Closed with: ${result}`;
@@ -71,16 +80,20 @@ export class CountryComponent implements OnInit {
     }
   }
 
+  //when user click on onSubmit button it return the result set to this method
   onSubmit(f: NgForm): void {
-    // this.countryService.add
+
+    //send data set to backend through the url
     const url = `${this.baseApi}/rest/v2/country/add`;
     this.httpClient.post(url, f.value)
       .subscribe((result) => {
+        //call to reloading method to refresh the page
         this.ngOnInit();
       });
     this.modalService.dismissAll();
   }
 
+  //when user click on edit button this method loads data to the edit form
   openEdit(targetModel: any, country: Country){
     this.modalService.open(targetModel,{
       centered: true,
@@ -94,16 +107,20 @@ export class CountryComponent implements OnInit {
     });
   }
 
+  //when user save the changers
   onSave() {
     const editURL = `${this.baseApi}/rest/v2/country/update/`+ this.editForm.value.id;
     this.httpClient.put(editURL, this.editForm.value)
       .subscribe((results) => {
+        //call to reloading method to refresh the page
         this.ngOnInit();
         this.modalService.dismissAll();
       });
   }
 
+  //when user click on delete button
   openDelete(targetModal: any, country: Country) {
+    //get the id of the country which, user wants to delete
     this.deleteId = country.id;
     this.modalService.open(targetModal, {
       backdrop: 'static',
@@ -111,10 +128,12 @@ export class CountryComponent implements OnInit {
     });
   }
 
+  //send the deleteId to backend through the url
   onDelete() {
     const deleteURL = `${this.baseApi}/rest/v2/country/delete/` + this.deleteId;
     this.httpClient.delete(deleteURL)
       .subscribe((results) => {
+        //call to reloading method to refresh the page
         this.ngOnInit();
         this.modalService.dismissAll();
       });
